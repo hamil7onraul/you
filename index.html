@@ -835,10 +835,7 @@ textarea.inp{resize:none;}
           <div class="ql-item-ic" style="background:var(--golds);color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1H1a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z"/></svg></div>
           <span class="ql-item-lbl">Assistente IA</span>
         </div>
-        <div class="ql-item" onclick="qlOpen=false;document.getElementById('ql-menu').style.display='none';openWrapped()">
-          <div class="ql-item-ic" style="background:var(--golds);color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-          <span class="ql-item-lbl">2026 Wrapped</span>
-        </div>
+
         <div class="ql-item" onclick="qlOpen=false;document.getElementById('ql-menu').style.display='none';openSettings()">
           <div class="ql-item-ic" style="background:var(--sf3);color:var(--mu)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2m0 16v2m7.07 1.07l-1.41-1.41M4.93 19.07l1.41-1.41M22 12h-2M4 12H2"/></svg></div>
           <span class="ql-item-lbl">Definições</span>
@@ -909,6 +906,21 @@ textarea.inp{resize:none;}
       <button class="btn btn-p" onclick="openSundayScore()" style="flex-shrink:0;margin-left:16px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Gerar score
+      </button>
+    </div>
+  </div>
+
+  <!-- Monthly Resumo CTA — shown last week of month -->
+  <div id="monthly-cta" style="background:linear-gradient(135deg,rgba(167,139,250,.08),rgba(200,169,110,.08));border:1px solid rgba(167,139,250,.25);border-radius:var(--r);padding:18px 20px;margin-bottom:20px;display:none">
+    <div class="flex aic jcsb">
+      <div>
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--pur);margin-bottom:4px" id="monthly-cta-label">Março a terminar</div>
+        <div style="font-size:.9rem;font-weight:600;margin-bottom:4px">YOU em Março</div>
+        <div style="font-size:.76rem;color:var(--di)">Vê o resumo do mês e partilha com os teus amigos</div>
+      </div>
+      <button class="btn" style="flex-shrink:0;margin-left:16px;background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);color:var(--pur)" onclick="openWrapped()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Ver resumo
       </button>
     </div>
   </div>
@@ -3593,10 +3605,189 @@ window.addEventListener('appinstalled',()=>{
   if(banner)banner.style.display='none';
 });
 
-// ── YEAR WRAPPED ───────────────────────────────
+// ── MONTHLY RESUMO ─────────────────────────────
+const MONTHS_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MONTH_EMOJIS={
+  wakeup:'☀️', vitamind:'💊', reading:'📖', water:'💧', noscreen:'🌙',
+  gym:'💪', sleep:'😴', food:'🥗', steps:'🚶'
+};
+
+// Simulated monthly history — in production this comes from localStorage/DB
+// Each entry: {weekOf, habDays:{id:count}, gymDone, score}
+function buildMonthlyData(){
+  const now=new Date('2026-04-01');
+  const monthName=MONTHS_PT[2]; // March
+  const weeksInMonth=4;
+
+  // Aggregate habits across all weeks (simulated from current week * 4)
+  const monthHabits=habits.map(h=>{
+    const doneThisWeek=h.days.slice(0,HAB_TODAY+1).filter(Boolean).length;
+    // Simulate a full month: ~4 weeks, each week similar to current
+    const totalDays=Math.round(doneThisWeek * 4.3); // ~4.3 weeks in a month
+    const possibleDays=Math.min(h.target*4,28);
+    return {
+      id:h.id, name:h.name, icon:h.icon, color:h.color,
+      target:h.target, totalDays, possibleDays,
+      pct:Math.min(100,Math.round((totalDays/possibleDays)*100))
+    };
+  });
+
+  // Gym for the month
+  const gymPerWeek=gymPlan.filter(d=>d.done&&!d.rest).length;
+  const gymMonthDone=gymPerWeek*4;
+  const gymMonthTotal=gymPlan.filter(d=>!d.rest).length*4;
+
+  // Average score
+  const scores=weekArchive.slice(0,4).map(w=>w.score).filter(s=>s>0);
+  const avgScore=scores.length?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):parseInt(document.getElementById('ys-num')?.textContent||70);
+
+  return {monthName, monthHabits, gymMonthDone, gymMonthTotal, avgScore};
+}
+
 function openWrapped(){
-  const year=new Date().getFullYear();
-  document.getElementById('wrapped-year').textContent=String(year)+' WRAPPED';
+  const data=buildMonthlyData();
+  const now=new Date('2026-04-01');
+  const monthLabel=data.monthName+' '+now.getFullYear();
+
+  // Update header
+  const ml=document.getElementById('wrapped-month-label');
+  if(ml)ml.textContent=monthLabel;
+
+  // Score
+  const scoreEl=document.getElementById('wrapped-score');
+  const scoreLbl=document.getElementById('wrapped-score-label');
+  if(scoreEl){
+    scoreEl.textContent=data.avgScore;
+    scoreEl.style.color=data.avgScore>=80?'var(--grn)':data.avgScore>=65?'var(--gold)':'var(--org)';
+  }
+  if(scoreLbl){
+    const labels=['Mês difícil','A crescer','Progresso sólido','Mês muito bom!','Mês excelente!'];
+    scoreLbl.textContent=labels[Math.min(4,Math.floor(data.avgScore/20))];
+  }
+
+  // HABIT HIGHLIGHTS — the star of the show
+  const habEl=document.getElementById('wrapped-habits');
+  if(habEl){
+    habEl.innerHTML=data.monthHabits.map(h=>{
+      const pct=h.pct;
+      const bar=`<div style="height:4px;border-radius:2px;background:var(--sf3);margin:6px 0 2px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${h.color};border-radius:2px;transition:width .8s ease"></div></div>`;
+      const msg=pct>=90?'🔥 Consistência de topo':pct>=70?'💪 Muito bem':pct>=50?'📈 A melhorar':'💡 Foca aqui';
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:12px">
+        <div style="font-size:1.2rem;flex-shrink:0">${h.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+            <div style="font-size:.8rem;font-weight:600">${h.name}</div>
+            <div style="font-family:var(--fm);font-size:.82rem;font-weight:700;color:${h.color}">${h.totalDays} dias</div>
+          </div>
+          ${bar}
+          <div style="font-size:.64rem;color:var(--mu)">${msg} · meta: ${h.target}d/semana</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Stats grid
+  const statsGrid=document.getElementById('wrapped-stats-grid');
+  if(statsGrid){
+    statsGrid.innerHTML=[
+      {label:'Treinos',val:data.gymMonthDone,total:data.gymMonthTotal,color:'var(--org)',icon:'💪'},
+      {label:'YOU Score',val:data.avgScore,total:100,color:'var(--gold)',icon:'⭐'},
+      {label:'Hábitos',val:data.monthHabits.filter(h=>h.pct>=70).length,total:data.monthHabits.length,color:'var(--grn)',icon:'✅'},
+      {label:'Semanas',val:weekArchive.slice(0,4).length||1,total:4,color:'var(--blu)',icon:'📅'},
+    ].map(s=>`
+      <div style="background:var(--sf2);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:1rem;margin-bottom:4px">${s.icon}</div>
+        <div style="font-size:.58rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${s.label}</div>
+        <div style="font-family:var(--fm);font-size:1.4rem;font-weight:700;color:${s.color}">${s.val}<span style="font-size:.7rem;color:var(--mu);font-weight:400">/${s.total}</span></div>
+      </div>`).join('');
+  }
+
+  // Insights
+  const patternsEl=document.getElementById('wrapped-patterns');
+  if(patternsEl){
+    const insights=[];
+    const bestHabit=data.monthHabits.reduce((a,b)=>a.pct>b.pct?a:b);
+    const worstHabit=data.monthHabits.reduce((a,b)=>a.pct<b.pct?a:b);
+    insights.push({txt:`${bestHabit.icon} ${bestHabit.name}: ${bestHabit.totalDays} dias — o teu melhor hábito deste mês.`,color:'var(--grn)'});
+    if(worstHabit.pct<60)insights.push({txt:`${worstHabit.icon} ${worstHabit.name} tem margem — apenas ${worstHabit.totalDays} dias de ${worstHabit.possibleDays} possíveis.`,color:'var(--org)'});
+    if(data.gymMonthDone>=data.gymMonthTotal*0.8)insights.push({txt:`💪 ${data.gymMonthDone} treinos completados — consistência excelente!`,color:'var(--org)'});
+    insights.push({txt:`⭐ Score médio de ${data.avgScore}/100 em ${data.monthName}.`,color:'var(--gold)'});
+    patternsEl.innerHTML=insights.map(i=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd)"><div style="width:5px;height:5px;border-radius:50%;background:${i.color};flex-shrink:0;margin-top:6px"></div><div style="font-size:.78rem;color:var(--di);line-height:1.5">${i.txt}</div></div>`).join('');
+  }
+
+  document.getElementById('modal-wrapped').style.display='flex';
+}
+
+function shareWrapped(){
+  const data=buildMonthlyData();
+  const canvas=document.getElementById('share-canvas');
+  if(!canvas)return;
+  const W=800,H=900;canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  // Background
+  ctx.fillStyle='#07070d';ctx.fillRect(0,0,W,H);
+  // Decorative gradient at top
+  const grad=ctx.createRadialGradient(400,0,0,400,0,400);
+  grad.addColorStop(0,'rgba(167,139,250,0.12)');grad.addColorStop(1,'transparent');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  // YOU logo
+  ctx.fillStyle='#c8a96e';roundRect(ctx,36,40,40,40,10);ctx.fill();
+  ctx.fillStyle='#000';ctx.font='bold 18px serif';ctx.textAlign='center';ctx.fillText('Y',56,67);
+  ctx.fillStyle='#f0eff8';ctx.font='bold 20px serif';ctx.textAlign='left';ctx.fillText('YOU',86,68);
+  // Month label
+  ctx.fillStyle='rgba(167,139,250,0.7)';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
+  ctx.fillText((data.monthName+' 2026').toUpperCase()+' · RESUMO MENSAL',400,60);
+  // Score
+  ctx.fillStyle='#c8a96e';ctx.font='bold 120px serif';ctx.textAlign='center';ctx.fillText(data.avgScore,400,200);
+  ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='bold 30px serif';ctx.fillText('/100 · YOU SCORE',400,240);
+  // Divider
+  ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(60,280);ctx.lineTo(740,280);ctx.stroke();
+  // Habit rows
+  ctx.font='bold 14px sans-serif';ctx.textAlign='left';
+  const topHabits=data.monthHabits.slice(0,4);
+  topHabits.forEach((h,i)=>{
+    const y=320+i*110;
+    // habit icon + name
+    ctx.fillStyle='rgba(255,255,255,0.85)';ctx.font='bold 28px sans-serif';ctx.fillText(h.icon,60,y);
+    ctx.fillStyle='#f0eff8';ctx.font='bold 18px sans-serif';ctx.fillText(h.name,106,y);
+    // days count
+    ctx.fillStyle=h.color;ctx.font='bold 36px serif';ctx.textAlign='right';ctx.fillText(h.totalDays+' dias',740,y);
+    ctx.textAlign='left';
+    // progress bar
+    const bx=60,by=y+14,bw=680,bh=8;
+    ctx.fillStyle='rgba(255,255,255,0.08)';roundRect(ctx,bx,by,bw,bh,4);ctx.fill();
+    ctx.fillStyle=h.color;ctx.globalAlpha=0.8;
+    roundRect(ctx,bx,by,Math.round(bw*(h.pct/100)),bh,4);ctx.fill();
+    ctx.globalAlpha=1;
+  });
+  // Footer
+  ctx.fillStyle='rgba(255,255,255,0.1)';ctx.font='13px sans-serif';ctx.textAlign='center';
+  ctx.fillText('you.app',400,H-30);
+  // Show share modal
+  document.getElementById('modal-wrapped').style.display='none';
+  document.getElementById('share-step-1').style.display='none';
+  document.getElementById('share-step-2').style.display='block';
+  document.getElementById('share-modal-title').textContent='Partilhar Resumo Mensal';
+  document.getElementById('share-modal-bg').classList.add('on');
+}
+
+// Show monthly CTA in last week of month
+function checkMonthlyCTA(){
+  const el=document.getElementById('monthly-cta');if(!el)return;
+  const now=new Date();
+  const lastDay=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
+  const daysLeft=lastDay-now.getDate();
+  if(daysLeft<=7){
+    el.style.display='block';
+    const lbl=document.getElementById('monthly-cta-label');
+    if(lbl)lbl.textContent=MONTHS_PT[now.getMonth()]+' a terminar · '+daysLeft+' dias';
+  }
+  // For demo: always show
+  el.style.display='block';
+  const lbl=document.getElementById('monthly-cta-label');
+  if(lbl)lbl.textContent='YOU em Março · Ver resumo';
+}
+checkMonthlyCTA();
 
   // Aggregate data from weekArchive + current week
   const allWeeks=[
@@ -3655,54 +3846,62 @@ function openWrapped(){
       <div class="lrow"><div class="ldot" style="background:var(--pur)"></div><div class="linfo"><div class="ltitle">Consistência de treino</div><div class="lsub">${totalGymTotal>0?Math.round((totalGymDone/totalGymTotal)*100):0}% dos treinos planeados</div></div><span class="badge ${totalGymDone/Math.max(totalGymTotal,1)>=0.8?'bg':'ba'}">${totalGymDone}/${totalGymTotal}</span></div>`;
   }
 
-  // Patterns — insights from data
-  const patterns=document.getElementById('wrapped-patterns');
-  if(patterns){
-    const insights=[];
-    if(totalGymDone>=totalGymTotal*0.85)insights.push({txt:`Completaste ${Math.round((totalGymDone/Math.max(totalGymTotal,1))*100)}% dos treinos planeados — consistência de topo.`,color:'var(--grn)'});
-    else if(totalGymDone>0)insights.push({txt:`Fizeste ${totalGymDone} treinos. Com mais consistência consegues ir mais longe.`,color:'var(--org)'});
-    if(avgScore>=70)insights.push({txt:`Score médio de ${avgScore}/100 — estás no caminho certo.`,color:'var(--gold)'});
-    if(perfectGymWeeks>0)insights.push({txt:`Tiveste ${perfectGymWeeks} semana${perfectGymWeeks>1?'s':''} de treino perfeita${perfectGymWeeks>1?'s':''}.`,color:'var(--blu)'});
-    if(totalTasks>0)insights.push({txt:`Concluíste ${totalTasks} tarefas ao longo do ano.`,color:'var(--pur)'});
-    if(insights.length===0)insights.push({txt:'Continua a registar dados semanais para ver os teus padrões do ano.',color:'var(--mu)'});
-    patterns.innerHTML=insights.map(ins=>`<div class="flex aic" style="gap:8px;padding:6px 0;border-bottom:1px solid var(--brd)"><div style="width:6px;height:6px;border-radius:50%;background:${ins.color};flex-shrink:0"></div><div style="font-size:.78rem;color:var(--di);line-height:1.5">${ins.txt}</div></div>`).join('');
-  }
-
-  document.getElementById('modal-wrapped').style.display='flex';
-}
-
 function shareWrapped(){
-  const score=document.getElementById('wrapped-score')?.textContent||'74';
-  const year=new Date().getFullYear();
+  const data=buildMonthlyData();
   const canvas=document.getElementById('share-canvas');
   if(!canvas)return;
-  const W=800,H=800;canvas.width=W;canvas.height=H;
+  const W=800,H=960;canvas.width=W;canvas.height=H;
   const ctx=canvas.getContext('2d');
-  // Dark gradient background
+  // Background
   ctx.fillStyle='#07070d';ctx.fillRect(0,0,W,H);
-  // Subtle circles
-  ctx.strokeStyle='rgba(200,169,110,0.06)';ctx.lineWidth=1;
-  for(const r of[380,290,200]){{ctx.beginPath();ctx.arc(400,400,r,0,Math.PI*2);ctx.stroke();}}
+  const grad=ctx.createRadialGradient(400,0,0,400,0,500);
+  grad.addColorStop(0,'rgba(167,139,250,0.1)');grad.addColorStop(1,'transparent');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
   // YOU logo
-  ctx.fillStyle='#c8a96e';roundRect(ctx,36,36,44,44,10);ctx.fill();
-  ctx.fillStyle='#000';ctx.font='bold 20px serif';ctx.textAlign='center';ctx.fillText('Y',58,65);
-  ctx.fillStyle='#f0eff8';ctx.font='bold 22px serif';ctx.textAlign='left';ctx.fillText('YOU',92,66);
-  // Year Wrapped title
-  ctx.fillStyle='rgba(200,169,110,0.6)';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-  ctx.fillText(String(year)+' WRAPPED',400,140);
-  // Big score
-  ctx.fillStyle='#c8a96e';ctx.font='bold 200px serif';ctx.textAlign='center';ctx.fillText(score,400,380);
-  ctx.fillStyle='rgba(255,255,255,0.18)';ctx.font='bold 40px serif';ctx.fillText('/100',400,430);
-  ctx.fillStyle='#f0eff8';ctx.font='bold 28px sans-serif';ctx.fillText('YOU Score médio anual',400,490);
-  // Stats mini
-  const name=userProfile.name||'';
-  if(name){ctx.fillStyle='rgba(200,169,110,0.45)';ctx.font='bold 16px sans-serif';ctx.fillText(name.toUpperCase(),400,555);}
-  ctx.fillStyle='rgba(255,255,255,0.1)';ctx.font='13px sans-serif';ctx.fillText('you.app',400,760);
-  // Show share modal step 2
+  ctx.fillStyle='#c8a96e';roundRect(ctx,36,40,40,40,10);ctx.fill();
+  ctx.fillStyle='#000';ctx.font='bold 18px serif';ctx.textAlign='center';ctx.fillText('Y',56,67);
+  // Title "YOU em Janeiro"
+  ctx.fillStyle='#f0eff8';ctx.font='bold 54px serif';ctx.textAlign='center';
+  ctx.fillText('YOU em '+data.monthName,400,120);
+  ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='16px sans-serif';
+  ctx.fillText(new Date('2026-04-01').getFullYear().toString(),400,148);
+  // Score hero
+  ctx.fillStyle='rgba(200,169,110,0.08)';roundRect(ctx,60,172,680,130,14);ctx.fill();
+  ctx.strokeStyle='rgba(200,169,110,0.2)';ctx.lineWidth=1;roundRect(ctx,60,172,680,130,14);ctx.stroke();
+  ctx.fillStyle='rgba(200,169,110,0.6)';ctx.font='11px sans-serif';ctx.textAlign='center';
+  ctx.fillText('YOU SCORE MÉDIO',400,200);
+  ctx.fillStyle='#c8a96e';ctx.font='bold 80px serif';ctx.textAlign='center';
+  ctx.fillText(data.avgScore,400,278);
+  ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='bold 22px serif';ctx.fillText('/100',540,270);
+  // Habit rows
+  const topHabits=data.monthHabits.slice(0,4);
+  topHabits.forEach((h,i)=>{
+    const y=340+i*130;
+    ctx.fillStyle='rgba(255,255,255,0.03)';roundRect(ctx,60,y-10,680,110,10);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font='26px sans-serif';ctx.textAlign='left';ctx.fillText(h.icon,80,y+36);
+    ctx.fillStyle='#f0eff8';ctx.font='bold 18px sans-serif';ctx.fillText(h.name,122,y+22);
+    // days
+    ctx.fillStyle=h.color;ctx.font='bold 32px serif';ctx.textAlign='right';
+    ctx.fillText(h.totalDays+' dias',720,y+26);
+    ctx.textAlign='left';
+    // progress bar
+    const bx=122,by=y+38,bw=540,bh=8;
+    ctx.fillStyle='rgba(255,255,255,0.07)';roundRect(ctx,bx,by,bw,bh,4);ctx.fill();
+    ctx.fillStyle=h.color;ctx.globalAlpha=0.75;
+    roundRect(ctx,bx,by,Math.round(bw*(h.pct/100)),bh,4);ctx.fill();
+    ctx.globalAlpha=1;
+    // percentage
+    ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font='12px sans-serif';ctx.textAlign='right';
+    ctx.fillText(h.pct+'%',720,y+58);ctx.textAlign='left';
+  });
+  // Footer
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.font='13px sans-serif';ctx.textAlign='center';
+  ctx.fillText('you.app',400,H-28);
+  // Open share modal
   document.getElementById('modal-wrapped').style.display='none';
   document.getElementById('share-step-1').style.display='none';
   document.getElementById('share-step-2').style.display='block';
-  document.getElementById('share-modal-title').textContent='Partilhar Wrapped';
+  document.getElementById('share-modal-title').textContent='YOU em '+data.monthName;
   document.getElementById('share-modal-bg').classList.add('on');
 }
 
@@ -4951,47 +5150,49 @@ document.addEventListener('click',e=>{
 </div>
 
 <!-- YEAR WRAPPED MODAL -->
-<div id="modal-wrapped" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);z-index:800;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
-  <div style="background:linear-gradient(160deg,var(--sf),var(--sf2));border:1px solid var(--goldb);border-radius:20px;padding:32px;width:100%;max-width:500px;box-shadow:0 32px 80px rgba(0,0,0,.7);position:relative">
-    <div style="cursor:pointer;color:var(--mu);position:absolute;top:20px;right:20px" onclick="closeModal('modal-wrapped')">
+<div id="modal-wrapped" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);z-index:800;align-items:center;justify-content:center;padding:20px;overflow-y:auto;">
+  <div style="background:linear-gradient(160deg,var(--sf),var(--sf2));border:1px solid var(--goldb);border-radius:20px;padding:28px;width:100%;max-width:480px;box-shadow:0 32px 80px rgba(0,0,0,.7);position:relative;max-height:90vh;overflow-y:auto">
+    <div style="cursor:pointer;color:var(--mu);position:absolute;top:20px;right:20px;z-index:1" onclick="closeModal('modal-wrapped')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </div>
 
     <!-- Header -->
-    <div style="text-align:center;margin-bottom:28px">
-      <div style="font-size:.68rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:8px" id="wrapped-year">2026</div>
-      <div style="font-family:var(--fd);font-size:2.2rem;font-weight:700;line-height:1.1;margin-bottom:6px">O teu ano<br><em style="color:var(--gold)">em números.</em></div>
-      <div style="font-size:.8rem;color:var(--di)" id="wrapped-subtitle">Baseado nos dados do YOU este ano</div>
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:6px" id="wrapped-month-label">Março 2026</div>
+      <div style="font-family:var(--fd);font-size:2rem;font-weight:700;line-height:1.15;margin-bottom:4px"><em style="color:var(--gold)">YOU</em> em números.</div>
+      <div style="font-size:.76rem;color:var(--di)" id="wrapped-subtitle">O teu mês em números · dados automáticos YOU</div>
     </div>
 
-    <!-- Big hero stat -->
-    <div style="background:linear-gradient(135deg,rgba(200,169,110,.12),rgba(107,156,248,.08));border:1px solid var(--goldb);border-radius:14px;padding:24px;text-align:center;margin-bottom:16px">
-      <div style="font-size:.65rem;color:var(--gold);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">YOU Score médio anual</div>
-      <div style="font-family:var(--fd);font-size:5rem;font-weight:700;color:var(--gold);line-height:1" id="wrapped-score">74</div>
-      <div style="font-size:.82rem;color:var(--di);margin-top:6px" id="wrapped-score-label">Ano sólido — acima da média</div>
+    <!-- YOU Score hero -->
+    <div style="background:linear-gradient(135deg,rgba(200,169,110,.1),rgba(107,156,248,.06));border:1px solid var(--goldb);border-radius:14px;padding:20px;text-align:center;margin-bottom:14px">
+      <div style="font-size:.6rem;color:var(--gold);font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">YOU Score médio do mês</div>
+      <div style="font-family:var(--fd);font-size:4rem;font-weight:700;line-height:1" id="wrapped-score">74</div>
+      <div style="font-size:.76rem;color:var(--di);margin-top:4px" id="wrapped-score-label">Mês sólido — acima da média</div>
     </div>
 
-    <!-- Stats grid -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px" id="wrapped-stats-grid"></div>
-
-    <!-- Week highlights -->
-    <div style="background:var(--sf2);border-radius:12px;padding:16px;margin-bottom:16px">
-      <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:12px">Semanas de destaque</div>
-      <div id="wrapped-highlights"></div>
+    <!-- Habit highlights — the star of Monthly -->
+    <div style="background:var(--sf2);border-radius:12px;padding:16px;margin-bottom:12px">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:14px">Os teus hábitos este mês</div>
+      <div id="wrapped-habits"></div>
     </div>
 
-    <!-- Patterns -->
-    <div style="background:var(--sf2);border-radius:12px;padding:16px;margin-bottom:20px">
-      <div style="font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:10px">O que os dados dizem sobre ti</div>
+    <!-- Stats 2x2 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px" id="wrapped-stats-grid"></div>
+
+    <!-- Insight -->
+    <div style="background:var(--sf2);border-radius:12px;padding:14px;margin-bottom:16px">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mu);margin-bottom:10px">O que os dados dizem</div>
       <div id="wrapped-patterns"></div>
     </div>
 
-    <!-- Share -->
-    <button class="btn btn-p" style="width:100%;justify-content:center;height:46px" onclick="shareWrapped()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-      Partilhar o meu 2026 Wrapped
-    </button>
-    <div style="font-size:.68rem;color:var(--mu);text-align:center;margin-top:8px">Disponível a 31 de Dezembro · Partilha agora como preview</div>
+    <!-- Actions -->
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-o" style="flex:1;justify-content:center" onclick="closeModal('modal-wrapped')">Fechar</button>
+      <button class="btn btn-p" style="flex:1;justify-content:center" onclick="shareWrapped()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Partilhar YOU em ✨
+      </button>
+    </div>
   </div>
 </div>
 
