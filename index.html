@@ -89,7 +89,7 @@ body{background:var(--bg);color:var(--tx);font-family:var(--ff);height:100vh;dis
 .tb-ai svg{width:14px;height:14px;}
 
 /* ── PAGE ────────────────────────────────────── */
-.pg{display:none;padding:28px;padding-bottom:90px;animation:fadein .25s ease;}
+.pg{display:none;padding:28px;padding-bottom:40px;animation:fadein .25s ease;}
 .pg.on{display:block;}
 @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
@@ -445,16 +445,11 @@ textarea.inp{resize:none;}
 .share-photo-label:hover{border-color:var(--brda);color:var(--tx);}
 .share-photo-label svg{width:14px;height:14px;stroke-width:1.75;}
 
-/* ── QUICK LOG ───────────────────────────────── */
-.ql-fab{position:fixed;bottom:calc(28px + env(safe-area-inset-bottom));right:28px;width:52px;height:52px;min-width:52px;min-height:52px;max-width:52px;max-height:52px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(200,169,110,.35);z-index:150;transition:all .2s;overflow:hidden;flex-shrink:0;}
-.ql-fab:hover{transform:scale(1.08);}
-.ql-fab svg{width:22px;height:22px;min-width:22px;min-height:22px;stroke-width:2.5;color:#000;flex-shrink:0;}
-.ql-menu{position:fixed;bottom:90px;right:28px;display:flex;flex-direction:column;gap:8px;z-index:150;opacity:0;pointer-events:none;transform:translateY(10px);transition:all .22s cubic-bezier(.4,0,.2,1);}
-.ql-menu.on{opacity:1;pointer-events:all;transform:translateY(0);}
-.ql-item{display:flex;align-items:center;gap:10px;background:var(--sf);border:1px solid var(--brd);border-radius:10px;padding:9px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;}
-.ql-item:hover{border-color:var(--brda);transform:translateX(-3px);}
-.ql-item-ic{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ql-item-ic svg{width:13px;height:13px;stroke-width:1.75;}
+/* ── QUICK LOG DROPDOWN ──────────────────────── */
+.ql-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .14s;}
+.ql-item:hover{background:var(--sf2);}
+.ql-item-ic{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ql-item-ic svg{width:12px;height:12px;stroke-width:1.75;}
 .ql-item-lbl{font-size:.78rem;font-weight:500;}
 /* ── CELEBRATION ─────────────────────────────── */
 .celeb-ov{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;pointer-events:none;}
@@ -510,6 +505,14 @@ textarea.inp{resize:none;}
   .sg4{grid-template-columns:repeat(2,1fr);}
   .kanban{grid-template-columns:1fr 1fr;}
 }
+/* ── COLLAPSIBLE SECTIONS ────────────────────── */
+.collapsible-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:2px 0;}
+.collapsible-header:hover .collapse-icon{color:var(--tx);}
+.collapse-icon{width:18px;height:18px;color:var(--mu);transition:transform .2s;flex-shrink:0;}
+.collapse-icon.open{transform:rotate(180deg);}
+.collapsible-body{overflow:hidden;transition:max-height .3s ease,opacity .2s ease;}
+.collapsible-body.closed{max-height:0!important;opacity:0;}
+
 @media(max-width:780px){
   /* Layout base */
   .sb{transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1),width .25s;}
@@ -534,7 +537,7 @@ textarea.inp{resize:none;}
   .tb-ham svg{width:15px;height:15px;stroke-width:1.75;}
 
   /* Pages */
-  .pg{padding:16px;padding-bottom:90px;}
+  .pg{padding:16px;padding-bottom:32px;}
 
   /* Grids */
   .grid2,.grid3,.grid4,.ga{grid-template-columns:1fr;}
@@ -560,6 +563,7 @@ textarea.inp{resize:none;}
 
   /* Topbar AI button — hide text */
   .tb-ai span:not(svg){display:none;}
+  .tb-reg-label{display:none;}
 
   /* Section header stack */
   .sh{flex-direction:column;gap:12px;align-items:flex-start;}
@@ -584,9 +588,7 @@ textarea.inp{resize:none;}
   .pricing-grid{grid-template-columns:1fr;}
 
   /* FAB — smaller on mobile, same corner */
-  .ql-fab{width:44px;height:44px;min-width:44px;min-height:44px;max-width:44px;max-height:44px;bottom:calc(20px + env(safe-area-inset-bottom));right:16px;}
-  .ql-fab svg{width:18px;height:18px;min-width:18px;min-height:18px;}
-  .ql-menu{bottom:calc(74px + env(safe-area-inset-bottom));right:16px;}
+
 }
 
 @media(max-width:480px){
@@ -596,6 +598,10 @@ textarea.inp{resize:none;}
   .sc-val{font-size:1.4rem;}
 }
 
+/* ── TOAST ───────────────────────────────────── */
+.toast{position:fixed;top:80px;right:20px;background:var(--sf);border:1px solid var(--grnb);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--grn);z-index:500;transform:translateY(-10px);opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+.toast.on{transform:translateY(0);opacity:1;}
+.toast svg{flex-shrink:0;}
 /* ── ONBOARDING ──────────────────────────────── */
 .ob-ov{position:fixed;inset:0;background:var(--bg);z-index:800;display:flex;align-items:center;justify-content:center;padding:24px;}
 .ob-ov.hidden{display:none;}
@@ -801,27 +807,43 @@ textarea.inp{resize:none;}
       <div class="mode-btn on" id="mode-you" onclick="setMode('you')">YOU</div>
       <div class="mode-btn us" id="mode-us" onclick="setMode('us')">US</div>
     </div>
-    <button class="tb-btn" onclick="openFocus()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 12h3m12 0h3M12 3v3m0 12v3"/></svg>
-      Modo Foco
-    </button>
-    <button class="tb-btn" onclick="openSearch()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <span style="font-family:var(--fm);font-size:.62rem;opacity:.5">⌘K</span>
-    </button>
-    <div class="tb-icon" onclick="toggleNotif()" id="notif-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span class="tb-dot"></span>
-    </div>
-    <button class="tb-ai" onclick="openAI()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1H1a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z"/></svg>
-      Assistente IA
-    </button>
-    <div class="tb-icon" onclick="openSettings()" title="Definições">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2m0 16v2m7.07 1.07l-1.41-1.41M4.93 19.07l1.41-1.41M22 12h-2M4 12H2"/></svg>
-    </div>
-    <div class="tb-icon" onclick="openWrapped()" title="2026 Wrapped" style="background:var(--golds);border-color:var(--goldb)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    <!-- Registar quick-log -->
+    <div style="position:relative" id="ql-wrap">
+      <button class="btn btn-p btn-sm" onclick="toggleQL()" id="ql-btn" style="gap:5px;font-size:.74rem;padding:0 12px;height:32px">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="tb-reg-label">Registar</span>
+      </button>
+      <div id="ql-menu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--sf);border:1px solid var(--brda);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:200">
+        <div class="ql-item" onclick="qlLog('gym')">
+          <div class="ql-item-ic" style="background:var(--orgs);color:var(--org)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5a1.5 1.5 0 0 0-3 0v11a1.5 1.5 0 0 0 3 0"/><path d="M20.5 6.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0"/><rect x="3.5" y="8.5" width="3" height="7" rx="1"/><rect x="17.5" y="8.5" width="3" height="7" rx="1"/><line x1="6.5" y1="12" x2="17.5" y2="12"/></svg></div>
+          <span class="ql-item-lbl">Registar treino</span>
+        </div>
+        <div class="ql-item" onclick="qlLog('sleep')">
+          <div class="ql-item-ic" style="background:var(--blus);color:var(--blu)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+          <span class="ql-item-lbl">Registar sono</span>
+        </div>
+        <div class="ql-item" onclick="qlLog('food')">
+          <div class="ql-item-ic" style="background:var(--grns);color:var(--grn)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
+          <span class="ql-item-lbl">Registar refeição</span>
+        </div>
+        <div class="ql-item" onclick="qlLog('weight')">
+          <div class="ql-item-ic" style="background:var(--purs);color:var(--pur)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <span class="ql-item-lbl">Registar peso</span>
+        </div>
+        <div style="border-top:1px solid var(--brd);margin:4px 0"></div>
+        <div class="ql-item" onclick="qlOpen=false;document.getElementById('ql-menu').style.display='none';openAI()">
+          <div class="ql-item-ic" style="background:var(--golds);color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-1H1a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z"/></svg></div>
+          <span class="ql-item-lbl">Assistente IA</span>
+        </div>
+        <div class="ql-item" onclick="qlOpen=false;document.getElementById('ql-menu').style.display='none';openWrapped()">
+          <div class="ql-item-ic" style="background:var(--golds);color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <span class="ql-item-lbl">2026 Wrapped</span>
+        </div>
+        <div class="ql-item" onclick="qlOpen=false;document.getElementById('ql-menu').style.display='none';openSettings()">
+          <div class="ql-item-ic" style="background:var(--sf3);color:var(--mu)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2m0 16v2m7.07 1.07l-1.41-1.41M4.93 19.07l1.41-1.41M22 12h-2M4 12H2"/></svg></div>
+          <span class="ql-item-lbl">Definições</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -3470,6 +3492,48 @@ function toggleMod(i){
 }
 renderMods();
 
+
+// ── COLLAPSIBLE SECTIONS ───────────────────────
+function makeCollapsible(el, startOpen=true){
+  if(!el)return;
+  const header=el.querySelector('.card-header')||el.querySelector('.flex.aic.jcsb');
+  if(!header)return;
+  const body=document.createElement('div');
+  body.className='collapsible-body';
+  // Move all children except header into body
+  const children=[...el.children].filter(c=>c!==header);
+  children.forEach(c=>body.appendChild(c));
+  el.appendChild(body);
+  const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('fill','none');
+  icon.setAttribute('stroke','currentColor');icon.setAttribute('stroke-width','2');
+  icon.setAttribute('stroke-linecap','round');icon.setAttribute('stroke-linejoin','round');
+  icon.setAttribute('class','collapse-icon'+(startOpen?' open':''));
+  const poly=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+  poly.setAttribute('points','6 9 12 15 18 9');icon.appendChild(poly);
+  header.style.cursor='pointer';header.appendChild(icon);
+  body.style.maxHeight=startOpen?(body.scrollHeight||600)+'px':'0px';
+  if(!startOpen)body.classList.add('closed');
+  let open=startOpen;
+  header.addEventListener('click',()=>{
+    open=!open;
+    body.style.maxHeight=open?body.scrollHeight+'px':'0';
+    icon.classList.toggle('open',open);
+    body.classList.toggle('closed',!open);
+  });
+}
+// Apply after DOM is ready — collapse secondary sections
+document.addEventListener('DOMContentLoaded',()=>{},{once:true});
+setTimeout(()=>{
+  // Whoop/Recovery card — collapsed (most users don't have Whoop)
+  const whoopCard=document.querySelector('#pg-hab .card.mb14');
+  if(whoopCard)makeCollapsible(whoopCard, false);
+
+  // Medical documents section in Saúde — collapsed by default
+  const docsCard=document.querySelector('#pg-saude .card:last-of-type');
+  if(docsCard)makeCollapsible(docsCard, false);
+},100);
+
 // ── PWA ────────────────────────────────────────
 // ── PWA MANIFEST (injected via Blob for iOS Safari compatibility) ──
 (function(){
@@ -4738,37 +4802,43 @@ function shareScoreNative(){
 let qlOpen=false;
 function toggleQL(){
   qlOpen=!qlOpen;
-  document.getElementById('ql-menu').classList.toggle('on',qlOpen);
-  const fab=document.getElementById('ql-fab');
-  if(fab)fab.style.transform=qlOpen?'rotate(45deg) scale(1.08)':'';
+  const menu=document.getElementById('ql-menu');
+  if(menu)menu.style.display=qlOpen?'block':'none';
+  const btn=document.getElementById('ql-btn');
+  if(btn)btn.style.background=qlOpen?'var(--goldb)':'';
 }
 function qlLog(type){
-  toggleQL();
+  qlOpen=false;
+  const menu=document.getElementById('ql-menu');
+  if(menu)menu.style.display='none';
+  const btn=document.getElementById('ql-btn');
+  if(btn)btn.style.background='';
   if(type==='gym'){
     const day=gymPlan.findIndex(d=>!d.done&&!d.rest);
-    if(day>=0){gymPlan[day].done=true;renderWeekGrid();computeYouScore();}
-    showToastQL('Treino registado!');
+    if(day>=0){gymPlan[day].done=true;renderWeekGrid();computeYouScore();updateWeekStats();if(typeof renderSemanaGym==='function')renderSemanaGym();
+      const done=gymPlan.filter(d=>d.done&&!d.rest).length;
+      setTimeout(()=>triggerCelebration(done,gymPlan.filter(d=>!d.rest).length),300);
+    } else showToastQL('Todos os treinos da semana concluídos!');
   } else if(type==='food'){
     go('gym');setTimeout(()=>document.querySelectorAll('#pg-gym .tab')[2]?.click(),100);
-    showToastQL('A abrir Nutrição...');
+    showToastQL('Abrindo Nutrição...');
   } else if(type==='sleep'){
-    go('hab');
-    showToastQL('A abrir Hábitos & Sono...');
+    go('hab');showToastQL('Abrindo Hábitos & Sono...');
   } else if(type==='weight'){
     go('gym');setTimeout(()=>document.querySelectorAll('#pg-gym .tab')[4]?.click(),100);
-    showToastQL('A abrir registo de peso...');
+    showToastQL('Abrindo registo de peso...');
   }
 }
 function showToastQL(msg){
-  const t=document.getElementById('toast');
-  if(!t)return;
+  const t=document.getElementById('toast');if(!t)return;
   document.getElementById('toast-msg').textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  t.classList.add('on');
+  clearTimeout(t._to);
+  t._to=setTimeout(()=>t.classList.remove('on'),2500);
 }
 document.addEventListener('click',e=>{
-  if(qlOpen&&!e.target.closest('#ql-fab')&&!e.target.closest('#ql-menu'))
-  {qlOpen=false;document.getElementById('ql-menu').classList.remove('on');const f=document.getElementById('ql-fab');if(f)f.style.transform='';}
+  if(qlOpen&&!e.target.closest('#ql-wrap'))
+  {qlOpen=false;const m=document.getElementById('ql-menu');if(m)m.style.display='none';const b=document.getElementById('ql-btn');if(b)b.style.background='';}
 });
 </script>
 
@@ -5135,27 +5205,7 @@ document.addEventListener('click',e=>{
 </div>
 
 <!-- QUICK LOG FAB -->
-<div class="ql-menu" id="ql-menu">
-  <div class="ql-item" onclick="qlLog('sleep')">
-    <div class="ql-item-ic" style="background:var(--blus);color:var(--blu)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
-    <span class="ql-item-lbl">Registar sono</span>
-  </div>
-  <div class="ql-item" onclick="qlLog('food')">
-    <div class="ql-item-ic" style="background:var(--grns);color:var(--grn)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div>
-    <span class="ql-item-lbl">Registar refeição</span>
-  </div>
-  <div class="ql-item" onclick="qlLog('gym')">
-    <div class="ql-item-ic" style="background:var(--orgs);color:var(--org)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5a1.5 1.5 0 0 0-3 0v11a1.5 1.5 0 0 0 3 0"/><path d="M20.5 6.5a1.5 1.5 0 0 1 3 0v11a1.5 1.5 0 0 1-3 0"/><rect x="3.5" y="8.5" width="3" height="7" rx="1"/><rect x="17.5" y="8.5" width="3" height="7" rx="1"/><line x1="6.5" y1="12" x2="17.5" y2="12"/></svg></div>
-    <span class="ql-item-lbl">Registar treino</span>
-  </div>
-  <div class="ql-item" onclick="qlLog('weight')">
-    <div class="ql-item-ic" style="background:var(--purs);color:var(--pur)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-    <span class="ql-item-lbl">Registar peso</span>
-  </div>
-</div>
-<button class="ql-fab" id="ql-fab" onclick="toggleQL()">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-</button>
+
 
 <!-- TOAST -->
 <div class="toast" id="toast">
